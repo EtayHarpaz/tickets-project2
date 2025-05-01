@@ -1,0 +1,147 @@
+body{
+    scale:150%;
+    width: 78%;
+    background-color: #d3d3d3;
+    margin-left: -70px;
+    margin-top: 60px;
+    overflow-x: hidden
+
+    }
+
+.login {
+ font-size: 32px;
+ margin-left: 540px;
+ margin-top: 145px;
+ position: absolute;
+ font-family:Arial, Helvetica, sans-serif;
+ font-weight: 600;
+
+
+ }
+
+ .button {
+    position: absolute;
+    margin-top: 285px;
+    margin-left: -150px;
+    font-size: 10px;
+    border: solid 1px grey;
+    background: grey;
+    border-radius: 5px;
+    width: 90px;
+    height: 20px;
+    color: white;
+    }
+
+  .button:hover{
+    cursor: pointer;
+    background-color: green;
+    transition: 1s ease;
+    }
+
+
+ .username {
+      margin-left: 600px;
+      margin-top: 205px;
+      position: absolute;
+      font-size: 13px;
+      border: solid grey 1px;
+      background: transparent;
+      border-radius: 7px;
+      width: 190px;
+      height: 20px;
+      padding-left: 5px;
+
+  }
+ .username:focus{
+    outline:none;}
+
+
+
+  .password {
+      margin-left: 600px;
+      margin-top: 240px;
+      font-size: 13px;
+      border: solid grey 1px;
+      background: transparent;
+      border-radius: 7px;
+      width: 190px;
+      height: 20px;
+      padding-left: 5px;
+
+
+  }
+   .password:focus{
+    outline:none;}
+
+  .show-pass {
+    scale: 2.75%;
+    margin-left: 520px;
+    margin-top: -5px;
+    position: absolute;
+    opacity: 50%;
+    cursor: pointer;
+
+    }
+
+
+  .show-none{
+    display: none;
+  }
+
+  .hide-pass{
+    display: none;
+  }
+
+
+  .logo{
+  scale: 25%;
+  position: absolute;
+  margin-left: 80px;
+  margin-top:-215px;
+ 
+
+  }
+
+  .wow{
+    display: none;
+  }
+
+  .wow2 {
+  position: absolute;
+  margin-left: 780px;
+  font-size: 15px;
+  margin-top: 287px;
+  color: red;
+  font-family:Arial, Helvetica, sans-serif}
+
+.div32{
+
+  width: 370px;
+  height: 300px;
+  background-color: white;
+  position: absolute;
+  border-radius: 10px;
+  border: solid 1px black;
+  margin-left: 525px;
+  margin-top: 00px;
+
+
+
+}
+
+
+
+
+
+
+
+
+.logout{
+
+position: absolute;
+margin-right: -1100px;
+
+
+
+
+}

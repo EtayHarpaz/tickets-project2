@@ -1,0 +1,572 @@
+.nav-links {
+      flex: 1;
+      text-align: left;
+      margin-left: -30px;
+      background-color: #ddd;
+      height: 50px;
+      width: 102.65%;
+      margin-top: -16px;
+
+
+  }
+
+  .nav-links ul li{
+      list-style: none;
+      display: inline-block;
+      position: relative;
+      margin-right: 20px;
+      cursor: pointer;
+      margin-top: 15px;
+
+
+
+  }
+  .nav-links ul li a{
+      color: black;
+      text-decoration: none;
+      font-size: 1.8vh;
+      margin-left: 10px;
+      font-family: Arial, Helvetica, sans-serif;
+
+
+  }
+
+
+
+
+  .nav-links ul li:active{
+    scale: 90%;
+  }
+
+  hr {
+    border: none;
+    height: 1px;
+    background-color: rgb(163, 163, 163);
+
+}
+
+
+
+#home{
+  text-decoration: underline;
+  text-decoration-color: black;
+  text-underline-offset: 4px;
+
+  }
+
+
+
+.Hello_customer{
+    font-size: 5vh;
+    margin-left: 10vh;
+    margin-top: 5vh;
+    position: absolute;
+
+}
+
+
+
+.logout{
+position: absolute;
+margin-left: 1340px;
+margin-top: 20px;
+font-size: 16px;
+border: solid 1px black;
+background: transparent;
+border-radius: 3px;
+
+}
+
+
+.logout:hover{
+cursor:pointer;
+
+}
+
+.messages{
+scale: 7%;
+position: absolute;
+margin-left: 1040px;
+margin-top: -224px;
+
+}
+
+
+.messages:hover{
+cursor:pointer;
+
+}
+
+.profile{
+scale: 8%;
+position: absolute;
+margin-left: 980px;
+margin-top: -224px;
+
+}
+
+
+.profile:hover{
+cursor:pointer;
+
+}
+
+
+.profileContainer{
+
+width: 59vh;
+height: 42vh;
+background-color: #eee;
+position: absolute;
+margin-left: 55vh;
+margin-top: 15vh;
+border: solid 1px grey;
+border-radius: 10px;
+
+
+
+
+}
+
+
+.profile_text{
+
+font-size: 28px;
+margin-left: 10px;
+margin-top: -220px;
+position: absolute;
+font-family: Arial, Helvetica, sans-serif;
+
+
+
+
+}
+
+
+.profile_pic{
+scale: 10%;
+margin-top: -220px;
+margin-left: -220px;
+
+
+}
+
+.profile_pic:hover{
+cursor:pointer;
+
+}
+
+
+.icon{
+margin-left: -245px;
+position:absolute;
+font-size: 30px;
+margin-top: -7px;
+
+
+}
+
+
+.icon:hover{
+cursor:pointer;
+
+}
+
+
+
+.hide{
+
+display: none;
+}
+
+
+
+.closing_popup_profile{
+
+position: absolute;
+margin-top: -400px;
+font-size: 27px;
+margin-left: 460px;
+font-family: Arial, Helvetica, sans-serif;
+
+
+
+
+}
+
+
+.closing_popup_profile:hover{
+cursor:pointer;
+
+
+
+}
+
+.blur{
+filter: blur(4px);
+
+
+
+}
+
+
+
+.messages_container {
+    height: 600px;
+    width: 1100px;
+    border: solid 1px grey;
+    background-color: white;
+    margin-left: 20vh;
+    margin-top: 5vh;
+    border-radius: 15px;
+    position: absolute;
+    display: flex;
+    flex-direction: column; /* Ensure stacking of messages and input */
+}
+
+.Title {
+    font-size: 35px;
+    margin-left: 15px;
+    margin-top: 1.5vh;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    text-decoration-color: grey;
+
+
+
+}
+
+.closing_popup_messages {
+    position: absolute;
+    font-size: 24px;
+    margin-left: 125vh;
+    margin-top: -5vh;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: transparent;
+    border: none;
+}
+
+.closing_popup_messages:hover {
+    cursor: pointer;
+}
+
+.message_box {
+    width: fit-content;
+    height: fit-content;
+    padding: 5px 10px 5px;
+    background-color: #89CFF0;
+    border-radius: 10px;
+
+
+
+}
+
+.sent {
+    background-color: #0084FF;
+    color: white;
+    align-self: flex-end;
+    max-width: 200px;
+    margin-right: 10px;
+    border-bottom-right-radius: 4px;
+    border-radius: 18px;
+    margin-left: 100px;
+    margin-bottom: 10px;
+}
+
+.received {
+    background-color: #f1f0f0;
+    color: black;
+    max-width: 200px;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    border-radius: 18px;
+    margin-left: 325px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
+.timestamp {
+    font-size: 1px;
+    color: gray;
+    align-self: flex-end;
+    margin-top: 3px;
+    margin-left: 15px;
+}
+
+.timestamp-sent {
+    font-size: 10px;
+    align-self: flex-end;
+    margin-top: 3px;
+    margin-left: 15px;
+}
+
+/* Adjust message input styling */
+.send_message_textarea {
+    height: 5.3vh;
+    width: 50%;
+    resize: none;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-left: 40vh;
+    font-size: 18px;
+    border-radius: 10px;
+    color: grey;
+}
+
+/* Proper scrolling for chat messages */
+#chatBox {
+    flex-grow: 1; /* Allow it to grow and take available space */
+    overflow-y: auto; /* Enable scrolling */
+    padding: 10px;
+    box-sizing: border-box;
+    margin-bottom: 60px; /* Space for textarea */
+    font-size: 18px;
+
+
+
+
+}
+
+/* Position the message input fixed at the bottom of the container */
+.messages_container {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.sending_arrow {
+    display: none;  /* Hide by default */
+    height: 15px;
+    width: 15px;
+    position: absolute;
+    bottom: -74px;
+    margin-left: -70px;
+    color: white;
+}
+
+.sending_arrow2 {
+    display: none;  /* Hide by default */
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    bottom: 15px;
+    margin-left: 20px;
+    color: white;
+}
+.background2 {
+    width: 400px;
+    height: 400px;
+    background-color: grey;
+    position: absolute;
+    margin-left: 300px;
+}
+
+.invisible {
+    all: unset;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.date_banner {
+    text-align: center;
+    background: #e0e0e0;
+    color: #555;
+    font-size: 12px;
+    padding: 5px;
+    margin-left: 33vh;
+    margin-bottom: 2.5vh;
+    margin-top: 2.5vh;
+    width: fit-content;
+    border-radius: 10px;
+}
+
+/* Sidebar styling */
+#chat_sidebar {
+    width: 150px;
+    float: left;
+    margin-left: 15px;
+    position: absolute;
+
+
+
+
+
+
+}
+
+
+.active_chat {
+    background: #eee;
+    border-radius: 10px;
+    width: 100px;
+    box-shadow: -20px 0 0 0 #eee;
+}
+
+
+.profile2{
+scale: 8%;
+position: absolute;
+margin-left: -280px;
+margin-top: -273px;
+
+}
+
+
+.chat_tab {
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    flex-direction: column; /* Stack name and message */
+
+
+
+}
+
+
+.last_message {
+    font-size: 14px;
+    color: gray;
+    margin-top: 5px;
+}
+
+
+.add_message_icon{
+
+width: 35px;
+height: 35px;
+margin-left: 17vh;
+position: absolute;
+margin-top: 1vh;
+
+
+
+}
+
+
+/* Style for the dropdown menu */
+#dropdownMenu {
+  display: none; /* Initially hidden */
+  position: absolute;
+  top: 50px;  /* Adjust this to position the dropdown under the icon */
+  right: 0;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  border-radius: 5px;
+}
+
+/* Style for the links in the dropdown */
+#dropdownMenu a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+#dropdownMenu a:hover {
+  background-color: #ddd;
+}
+
+/* Optional: styling for the image */
+.add_message_icon {
+  cursor: pointer;
+  font-size: 24px;
+  margin-top: 2.2vh;
+  margin-left: 15vh
+}
+
+
+.dropdown{
+margin-left: 20vh;
+margin-top: -3.5vh;
+position: absolute;
+
+
+
+}
+
+.dropdown-button{
+margin-left: 33vh;
+margin-top: -3.5vh;
+position: absolute;
+
+
+
+}
+
+
+
+.search_partner{
+
+    width: 30vh;
+    height: 3.5vh;
+    background-color: #D3D3D3;
+    border-radius: 10px;
+    margin-left: 1vh;
+    margin-top: 2vh;
+    border: none;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+
+
+
+
+
+
+
+}
+
+
+
+/* For WebKit browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+    width: 6px; /* Adjust scrollbar width */
+}
+
+::-webkit-scrollbar-track {
+    background: transparent; /* Remove default background */
+    border: none; /* Remove any border */
+    box-shadow: none; /* Remove any shadow */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888; /* Adjust scrollbar color */
+    border-radius: 3px;
+    border: none; /* Remove any border */
+}
+
+
+.number_of_new_messages{
+
+background-color: grey;
+width: 20px;
+height: 20px;
+border-radius: 10px;
+margin-left: 160.5vh;
+position: absolute;
+
+
+}
+
+.amount_messages_unread{
+
+font-size: 18px;
+margin-left: 0.8vh;
+
+
+}
+
+
+.mark_unread_chat{
+
+border-radius: 20px;
+background-color: grey;
+width: 10px;
+height: 10px;
+margin-left: 8vh;
+margin-top: 0.8vh;
+position: absolute;
+
+}

@@ -1,0 +1,352 @@
+  .nav-links {
+      flex: 1;
+      text-align: left;
+      margin-left: -30px;
+      background-color: #ddd;
+      height: 50px;
+      width: 1450px;
+      margin-top: -16px;
+
+
+  }
+
+  .nav-links ul li{
+      list-style: none;
+      display: inline-block;
+      position: relative;
+      margin-right: 20px;
+      cursor: pointer;
+      margin-top: 15px;
+
+
+
+  }
+  .nav-links ul li a{
+      color: black;
+      text-decoration: none;
+      font-size: 1.8vh;
+      margin-left: 10px;
+      font-family: Arial, Helvetica, sans-serif;
+
+
+  }
+
+
+
+
+  .nav-links ul li:active{
+    scale: 90%;
+  }
+
+  hr {
+    border: none;
+    height: 1px;
+    background-color: rgb(163, 163, 163);
+
+}
+
+#contact{
+  text-decoration: underline;
+  text-decoration-color: black;
+  text-underline-offset: 4px;
+}
+
+
+
+
+
+.amount_notes{
+background: transparent;
+border:none;
+color: blue;
+font-size: 15px;
+
+}
+
+.amount_notes:hover{
+cursor:pointer;}
+
+.save_button{
+    position: absolute;
+    margin-top: 2.7vh;
+    margin-left: 160vh;
+    font-size: 16px;
+    border: solid 1px black;
+    background: transparent;
+    border-radius: 5px;
+
+
+
+    }
+
+
+.filter_btn{
+position: absolute;
+margin-top: 25px;
+margin-left: 1300px;
+font-size: 15px;
+background-color: transparent;
+border: solid 1px black;
+border-radius: 3px;
+
+}
+
+
+.sort_btn{
+position: absolute;
+margin-top: 25px;
+margin-left: 1240px;
+font-size: 15px;
+background-color: transparent;
+border: solid 1px black;
+border-radius: 3px;
+
+}
+
+
+.sort_btn:hover{
+cursor:pointer;
+
+
+}
+
+.filter_btn:hover{
+cursor:pointer;
+
+
+}
+.hide{
+display: none;}
+
+.sorting_selection{
+margin-left: 1240px;
+margin-top: 55px;
+margin-bottom: -74px;
+}
+
+
+
+.filter_selection{
+margin-left: 1100px;
+margin-top: 55px;
+margin-bottom: -74px;
+}
+
+
+.active-filter {
+    display: inline-flex;
+    align-items: center;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-top: 55px;
+    margin-left: 1225px;
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: -80px;
+}
+
+.remove-filter-btn {
+    background: none;
+    border: none;
+    color: red;#sort_options, #filter_category, #filter_value {
+    font-size: 18px; /* Increase font size */
+    padding: 10px 15px; /* Increase padding for better spacing */
+    border-radius: 5px; /* Optional: smooth corners */
+    border: 1px solid #ccc; /* Optional: border color */
+
+
+}
+
+#sort_options {
+    width: 250px; /* Adjust width of sorting dropdown */
+}
+
+#filter_category, #filter_value {
+    width: 230px; /* Adjust width of filter category and value dropdown */
+}
+    font-weight: bold;
+    font-size: 14px;
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+.active-filter:hover {
+    background-color: #f8f8f8;
+}
+
+
+
+.closing_popup{
+width: 450px;
+height: 350px;
+background-color: white;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+border: solid 1px black;
+
+
+
+
+}
+
+
+.header{
+margin-left: 15px;}
+
+
+
+.solution_input{
+width: 400px;
+height: 200px;
+resize: none;
+position:absolute;
+margin-left: 15px;
+
+
+}
+
+.blur {
+filter: blur(4px);
+
+
+}
+
+
+
+
+.submit_solution{
+margin-top: 230px;
+margin-left: 15px;
+
+
+}
+
+.table-placement{
+position: absolute;
+margin-top: -25px;
+margin-left: 5px;
+width: 1420px;}
+
+
+
+
+.search_btn{
+position: absolute;
+margin-top: 25px;
+margin-left: 1190px;
+width: 28px;
+height: 28px;
+background-color: transparent;
+border: none;
+border-radius: 3px;
+
+}
+
+
+.search_btn:hover{
+cursor:pointer;
+
+}
+
+
+.textarea{
+margin-top: 20px;
+position: absolute;
+width: 500px;
+margin-left: 450px;
+border: solid 1px black;
+height: 30px;
+font-size: 18px;
+
+}
+
+.textarea:focus{
+outline: none;
+
+}
+
+
+.search_btn2{
+    margin-left: 970px;
+    margin-top: 30px;
+    position: absolute;
+
+
+
+
+}
+
+.this{
+    margin-left: -3px;
+    margin-top: 30px;
+
+}
+
+
+
+.border{
+    border: solid 4px blue;
+
+}
+
+
+
+.adding_up{
+
+margin-top: -3vh;
+
+
+
+}
+
+
+
+.diva{
+
+background-color: white;
+height: 10vh;
+
+
+
+
+
+}
+
+
+
+.forFilter{
+
+margin-top: -20px;
+position: absolute;
+margin-left: -13px;
+
+
+
+
+
+}
+
+
+
+
+.border{
+
+    border: solid 2px black;
+
+}
+
+
+
+.save_button_filter{
+
+
+
+
+
+
+}

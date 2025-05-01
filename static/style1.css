@@ -1,0 +1,247 @@
+
+  .popup-ticket-creation {
+      scale: 110%;
+      width: 600px;
+      height: 550px;
+      background-color: rgb(255, 255, 255);
+      margin-left: 50vh;
+      transition: 0.5s;
+      border: solid 1px black;
+      font-size: 20px;
+      margin-top: 70px;
+      
+    }
+
+  .popup-ticket-creation-customer {
+      scale: 110%;
+      width: 600px;
+      height: 500px;
+      background-color: rgb(255, 255, 255);
+      margin-left: 55vh;
+      transition: 0.5s;
+      border: solid 1px black;
+      font-size: 20px;
+      margin-top: 14vh
+      ;
+
+    }
+
+    .blurring {
+      filter: blur(3px);
+    }
+
+    .closing_button{
+      display: none;
+    }
+
+    .closing_button1{
+      border: none;
+      color: red;
+      font-size: 20px;
+      margin-left: 570px ;
+      background-color: transparent;
+      transition: 0.5s;
+    }
+
+
+    .title-ticket{
+      margin-left: 20px;
+      font-family:Arial, Helvetica, sans-serif;
+      font-size: 40px;
+
+
+    }
+
+    #severity{
+      margin-left: 20px;
+    }
+
+    a {
+      margin-left: 20px;
+    }
+
+    #customer{
+      margin-left: 20px;
+    }
+
+    .Description_box {
+      margin-left: 120px;
+      margin-top: -20px;
+      height: 100px;
+      font-family: Arial, Helvetica, sans-serif;
+      resize: none;
+      display: block;
+      overflow: hidden;
+      width: 450px;
+      font-size: 14px;
+      
+      
+      
+      
+    }
+
+
+
+
+    .hide {
+      display: none;
+    }
+
+    .submit-button{
+      margin-left: 20px;
+      background-color: rgb(87, 206, 87);
+      border: 0.5px solid black;
+      border-radius: 3px;
+
+    }
+
+    .submit-button2{
+      margin-left: 20px;
+      background-color: rgb(87, 206, 87);
+      border: 0.5px solid black;
+      border-radius: 3px;
+      margin-top: 20px;
+
+    }
+
+
+
+
+      .message-after-ticket-creation1 {
+        display: flex;
+        scale: 100%;
+        width: 550px;
+        height: 200px;
+        margin-left: 400px;
+        transition: 0.5s;
+        border: solid 1px black;
+        font-size: 30px;
+        text-align: center;
+        margin-top: 150px;
+        background-color: white;
+      
+      }
+
+      .message-after-ticket-creation1 a {
+        margin-top: 80px;
+        margin-left: 20px;
+      }
+
+      .newone {
+      display:none;
+      }
+
+      .newone1{
+      font-size: 20px;
+      position:absolute;
+      margin-left: 920px;
+      margin-top: -200px;
+      background: transparent;
+      color:black;
+      border:none;
+
+      }
+
+
+
+
+ 
+    
+
+      .message-after-ticket-creation{
+      display: none;
+    }
+
+      .closing_button_second{
+        margin-left: 970px;
+        margin-top: -500px;
+        position: absolute;
+        background-color: transparent;
+        color: red;
+        border: none;
+        font-size: 20px;
+      }
+
+      .closing_button_second:hover{
+        cursor: pointer;
+      }
+
+
+
+
+      .button-after2{
+        background-color: transparent;
+        border-radius: 5px;
+        font-size: 22px;
+        margin-left: -120px;
+        margin-top: 80px;
+        color: black;
+        border: solid 2px grey;
+        position: absolute;
+        
+    
+    
+      }
+
+
+  
+     
+
+
+
+
+
+
+  .nav-links {
+      flex: 1;
+      text-align: left;
+      margin-left: -30px;
+      background-color: #ddd;
+      height: 50px;
+      width: 1462px;
+      margin-top: -16px;
+
+
+  }
+
+  .nav-links ul li{
+      list-style: none;
+      display: inline-block;
+      position: relative;
+      margin-right: 20px;
+      cursor: pointer;
+      margin-top: 15px;
+
+
+
+  }
+  .nav-links ul li a{
+      color: black;
+      text-decoration: none;
+      font-size: 1.8vh;
+      margin-left: 10px;
+      font-family: Arial, Helvetica, sans-serif;
+
+
+  }
+
+
+
+
+  .nav-links ul li:active{
+    scale: 90%;
+  }
+
+  hr {
+    border: none;
+    height: 1px;
+    background-color: rgb(163, 163, 163);
+
+}
+
+#addTicket{
+  text-decoration: underline;
+  text-decoration-color: black;
+  text-underline-offset: 4px;
+}
+  

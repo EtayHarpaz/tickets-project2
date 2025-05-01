@@ -1,0 +1,169 @@
+
+
+
+.nav-links {
+    flex: 1;
+    text-align: left;
+    margin-left: -30px;
+    background-color: #ddd;
+    height: 50px;
+    width: 102.65%;
+    margin-top: -16px;
+}
+
+.nav-links ul li{
+    list-style: none;
+    display: inline-block;
+    position: relative;
+    margin-right: 20px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+.nav-links ul li a{
+    color: black;
+    text-decoration: none;
+    font-size: 1.8vh;
+    margin-left: 10px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.nav-links ul li:active{
+  scale: 90%;
+}
+
+hr {
+  border: none;
+  height: 1px;
+  background-color: rgb(163, 163, 163);
+}
+
+#editLists{
+  text-decoration: underline;
+  text-decoration-color: black;
+  text-underline-offset: 4px;
+}
+
+.customers-title, .supporters-title, .equipment-title {
+  font-size: 36px; /* Increased from 30px to 36px */
+  margin: 15px 0; /* Slightly decreased vertical spacing */
+}
+
+.layout-container {
+  display: flex;
+  justify-content: flex-start; /* Aligns both sections to the left */
+  gap: 100px; /* Space between sections */
+  margin-top: 20px; /* Adjusted top margin for better spacing */
+}
+
+.customers-container, .supporters-container {
+  display: flex;
+  flex-direction: column;
+
+
+}
+
+
+.supporters-container {
+
+    position: fixed;
+    margin-left: 280px;
+    display: flex;
+
+
+
+}
+/* Move customers-container to the right */
+.customers-container {
+  margin-left: 20px; /* Adjust this value to shift right */
+}
+
+.customer-item, .supporter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Aligns content evenly */
+}
+
+.customer-name, .supporters-list, .equipment-list {
+  font-size: 24px; /* Increased from 24px to 28px */
+}
+
+.customer-button {
+  color: red;
+  font-size: 22px; /* Increased from 20px to 22px */
+  opacity: 0.7; /* Slightly adjusted opacity for a cleaner look */
+  border: none;
+  background: none;
+  cursor: pointer;
+  margin-left: 10px; /* Space between the name and the button */
+  position: absolute;
+  margin-top: -15px;
+  margin-left: -20px;
+}
+
+.add_button {
+  margin-top: 25px;
+  width:30px;
+  font-size: 15px;
+  margin-left: 190px;
+  position:absolute;
+}
+
+.hide{
+display:none;
+transition: 1s ease;}
+
+
+.lo{
+    font-size: 200px;
+    display: flex;
+}
+
+
+
+.supporter-button{
+    margin-left: 100px;
+    color: red;
+    font-size: 22px; /* Increased from 20px to 22px */
+    opacity: 0.7; /* Slightly adjusted opacity for a cleaner look */
+    border: none;
+    background: none;
+    cursor: pointer;
+
+}
+
+
+.equipment-container{
+    position: fixed;
+    gap: 100px; /* Space between sections */
+    margin-top: 20px; /* Adjusted top margin for better spacing */
+    margin-top: 5px;
+    margin-left: 270px;
+}
+
+
+.equipment-button{
+    color: red;
+    font-size: 22px; /* Increased from 20px to 22px */
+    opacity: 0.7; /* Slightly adjusted opacity for a cleaner look */
+    border: none;
+    background: none;
+    margin-left: 100px;
+
+}
+
+
+.add_button_equipment{
+  margin-top: -45px;
+  width: 30px;
+  font-size: 15px;
+  margin-left: 190px;
+  position:absolute;
+
+
+
+}
+
+
+
+
+
