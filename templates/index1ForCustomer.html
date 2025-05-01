@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+    <meta charset="UTF-8">
+    <title>System</title>
+</head>
+<body id="body">
+    <div class="nav-links">
+
+            <ul>
+                <li id="home"><a href="{{ url_for('home') }}">Home</a></li>
+                <li id="contact" onclick="window.location.href='show-tickets';"><a href="#">Show Tickets</a></li>
+                <li id="addTicket"><a href="{{ url_for('add_ticket') }}">Submit Ticket</a></li>
+
+
+            </ul>
+            <hr>
+
+            <div class="popup-ticket-creation-customer">
+
+            <h1 class="title-ticket">Ticket submission</h1>
+            <form action="/customer_run" method="post">
+                <a>Report Severity</a>
+                <select name="severity" id="severity" class="severity">
+                    <option value="Critical">Critical</option>
+                    <option value="High">High</option>
+                    <option value="Med">Medium</option>
+                    <option value="Minor">Minor</option>
+                </select>
+                <br><br>
+
+
+                <a>Equipment</a>
+
+                <select name="Equipment" id="Equipment" class="Equipment">
+                    {% for equipment in all_equipments %}
+                    <option>{{  equipment[0] }}</option>
+
+                    {% endfor %}
+                </select>
+
+
+
+
+                <br><br>
+                <a>Description</a>
+                <textarea name="description" id="description" class="Description_box"></textarea>
+                <br><br>
+
+                <a>Add a file</a>
+                <input type="file" id="file" name="file" accept="image/png, image/jpeg, image/gif, application/pdf" >
+                <br><br>
+
+                <button type="submit" class="submit-button2">Submit Ticket</button>
+            </form>
+            </div>
+
+
+
+
+
+
+
+  </div>
+  <br>
+
+
+
+
+
+    <div class="message-after-ticket-creation">
+        <a>ticket number {{ ticket_number }} was created successfully</a>
+
+    </div>
+    <button class="newone">x</button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    const newTicketButton = document.querySelector("#addTicket");
+    const newTicketPopup = document.querySelector(".popup-ticket-creation-customer");
+    const closingButton = document.querySelector(".closing_button");
+    const submitButton = document.querySelector(".submit-button2");
+    const ticketCreated = document.querySelector(".message-after-ticket-creation");
+    const closing_button_second = document.querySelector(".closing_button_second");
+    const form = document.querySelector("form");
+    const submitButtonScreenNavBarClick = document.querySelector("#addTicket");
+
+
+
+
+
+
+
+
+    // Open popup
+
+
+    // Handle form submission without refreshing the page
+    form.addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent page reload
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: form.method,
+            body: formData,
+        })
+        .then(response => response.text()) // Assuming the response is HTML
+        .then(data => {
+            // Extract the ticket number from the response
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, "text/html");
+            const newTicketNumber = doc.querySelector(".message-after-ticket-creation a")?.textContent;
+
+            if (newTicketNumber) {
+                ticketCreated.innerHTML = `<a>${newTicketNumber}</a>`;
+                ticketCreated.classList.remove("message-after-ticket-creation");
+                ticketCreated.classList.add("message-after-ticket-creation1");
+
+
+
+
+
+
+
+
+
+
+
+
+
+            }
+
+            // Close popup after submission
+            newTicketPopup.classList.remove("popup-ticket-creation2");
+            newTicketPopup.classList.add("hide");
+
+        })
+        .catch(error => console.error("Error:", error));
+    });
+});
+
+
+
+    const submitButton = document.querySelector(".submit-button2");
+    const newTicketPopup = document.querySelector(".popup-ticket-creation-customer");
+    submitButton.addEventListener("click",overconsumption);
+
+
+    function overconsumption() {
+        newTicketPopup.classList.remove("popup-ticket-creation-customer");
+        newTicketPopup.classList.add("hide");
+        closingTicketCreatedMessagePopup.classList.add("newone1");
+        closingTicketCreatedMessagePopup.classList.remove("newone");
+
+
+    }
+
+
+
+
+       const closingTicketCreatedMessagePopup = document.querySelector(".newone");
+       closingTicketCreatedMessagePopup.addEventListener("click", forThis);
+       const ticketCreated = document.querySelector(".message-after-ticket-creation");
+
+
+       function forThis() {
+       closingTicketCreatedMessagePopup.classList.add("hide");
+       ticketCreated.style.display = "none";
+       // Send a POST request to Flask to trigger the backend function and render 'index2.html'
+        fetch('/trigger-function', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: "Hello from JavaScript!" })
+        })
+        .then(response => {
+            // Redirect the browser to the new page once the server responds
+            window.location.href = "/show-tickets";  // Adjust this if you need to go to a different route
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+
+
+       }
+
+
+
+
+
+    </script>
+
+
+</body>
+</html>

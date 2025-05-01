@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style4.css') }}">
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+  <div class="nav-links">
+        <ul>
+            <li id="home"><a href="{{ url_for('home') }}">Home</a></li>
+                <li id="contact" onclick="window.location.href='show-tickets';"><a href="#">Show Tickets</a></li>
+                <li id="addTicket"><a href="{{ url_for('add_ticket') }}">Submit Ticket</a></li>
+                <li id="editLists"><a href="{{ url_for('edit_lists') }}">Edit Lists</a></li>
+                <li id="accounts management"><a href="{{ url_for('accounts_management') }}">Accounts Management</a></li>
+
+        </ul>
+        <hr>
+    </div>
+
+  <div class="layout-container">
+    <div class="customers-container">
+        <h1 class="customers-title">Customers</h1>
+        <button id="customer_add" class="add_button">+</button>
+        {% for customer in all_customers %}
+            <div class="customer-item">
+                <span class="customer-name">{{ customer[0] }}</span>
+                <form name="customer_delete" action="/run-function" method="POST" style="display:inline;">
+                    <input type="hidden" name="customer_name" value="{{ customer[0] }}">
+                    <button class="customer-button" type="submit">x</button>
+                </form>
+            </div>
+        {% endfor %}
+        <div id="new-customer-input" style="display:none; margin-top: 10px;">
+            <input type="text" id="customer-name-input">
+            <button id="save-customer-button">Add</button>
+        </div>
+    </div>
+
+    <div class="supporters-container">
+        <h1 class="supporters-title">Supporters</h1>
+        <button id="supporter_add" class="add_button">+</button>
+        {% for supporter in all_supporters %}
+            {% if supporter[0] != "None" %}
+                <div class="supporter-item">
+                    <span class="supporters-list">{{ supporter[0] }}</span>
+                    <form name="supporter_delete" action="/run-one" method="POST" style="display:inline;">
+                        <input type="hidden" name="supporter_name" value="{{ supporter[0] }}">
+                        <button class="supporter-button" type="submit">x</button>
+                    </form>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div id="new-supporter-input" style="display:none; margin-top: 10px;">
+            <input type="text" id="supporter-name-input">
+            <button id="save-supporter-button">Add</button>
+        </div>
+
+
+
+
+    <div class="equipment-container">
+        <h1 class="supporters-title">Equipment</h1>
+        <button id="equipment_add" class="add_button_equipment">+</button>
+        {% for equipment in all_equipments %}
+            {% if equipment[0] != "Other" %}
+                <div class="equipment-item">
+                    <span class="equipment-list">{{ equipment[0] }}</span>
+                    <form name="equipment_name" action="/run-two" method="POST" style="display:inline;">
+                        <input type="hidden" name="equipment_name" value="{{ equipment[0] }}">
+                        <button class="equipment-button" type="submit">x</button>
+                    </form>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <div id="new-equipment-input" style="display:none; margin-top: 10px;">
+            <input type="text" id="equipment-name-input">
+            <button id="save-equipment-button">Add</button>
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+
+
+
+      // Customer functionality
+      document.getElementById('customer_add').addEventListener('click', function() {
+          document.getElementById('new-customer-input').style.display = 'block';
+          document.getElementById('customer-name-input').focus();
+      });
+
+      document.getElementById('save-customer-button').addEventListener('click', function() {
+          const newCustomerName = document.getElementById('customer-name-input').value;
+
+          // Send the new customer name to the server via AJAX
+          fetch('/add-customer', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: new URLSearchParams({ 'customer_name': newCustomerName })
+          })
+          .then(response => response.json())
+          .then(data => {
+              // Clear the input box and hide it
+              document.getElementById('new-customer-input').style.display = 'none';
+              document.getElementById('customer-name-input').value = '';
+
+              // Clear existing customers and add updated customers
+              const customersContainer = document.querySelector('.customers-container');
+              const customerItems = customersContainer.querySelectorAll('.customer-item');
+              customerItems.forEach(item => item.remove());
+
+              data.forEach(customer => {
+                  const customerDiv = document.createElement('div');
+                  customerDiv.className = 'customer-item';
+                  customerDiv.innerHTML = `
+                      <span class="customer-name">${customer[0]}</span>
+                      <form name="customer_delete" action="/run-function" method="POST" style="display:inline;">
+                          <input type="hidden" name="customer_name" value="${customer[0]}">
+                          <button class="customer-button" type="submit">x</button>
+                      </form>`;
+                  customersContainer.appendChild(customerDiv);
+              });
+          });
+      });
+
+      // Supporter functionality
+      document.getElementById('supporter_add').addEventListener('click', function() {
+          document.getElementById('new-supporter-input').style.display = 'block';
+          document.getElementById('supporter-name-input').focus();
+      });
+
+      document.getElementById('save-supporter-button').addEventListener('click', function() {
+          const newSupporterName = document.getElementById('supporter-name-input').value;
+
+          // Send the new supporter name to the server via AJAX
+          fetch('/add-supporter', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: new URLSearchParams({ 'supporter_name': newSupporterName })
+          })
+          .then(response => response.json())
+          .then(data => {
+              // Clear the input box and hide it
+              document.getElementById('new-supporter-input').style.display = 'none';
+              document.getElementById('supporter-name-input').value = '';
+
+              // Add new supporter directly to the supporters container
+              const supportersContainer = document.querySelector('.supporters-container');
+              const supporterDiv = document.createElement('div');
+              supporterDiv.className = 'supporter-item';
+              supporterDiv.innerHTML = `
+                  <span class="supporters-list">${newSupporterName}</span>
+                  <form name="supporter_delete" action="/run-one" method="POST" style="display:inline;">
+                      <input type="hidden" name="supporter_name" value="${newSupporterName}">
+                      <button class="customer-button" type="submit">x</button>
+                  </form>`;
+              supportersContainer.appendChild(supporterDiv);
+          });
+      });
+
+      // Event listener to hide the input boxes when clicking outside of them
+      document.addEventListener('click', function(event) {
+          const customerInputBox = document.getElementById('new-customer-input');
+          const supporterInputBox = document.getElementById('new-supporter-input');
+          const customerAddButton = document.getElementById('customer_add');
+          const supporterAddButton = document.getElementById('supporter_add');
+
+          // Check if the click was outside the customer input box and the button
+          if (!customerInputBox.contains(event.target) && event.target !== customerAddButton) {
+              customerInputBox.style.display = 'none';
+          }
+
+          // Check if the click was outside the supporter input box and the button
+          if (!supporterInputBox.contains(event.target) && event.target !== supporterAddButton) {
+              supporterInputBox.style.display = 'none';
+          }
+      });
+
+
+
+
+
+
+
+
+
+                              // Equipment functionality
+            document.getElementById('equipment_add').addEventListener('click', function() {
+                document.getElementById('new-equipment-input').style.display = 'block';
+                document.getElementById('equipment-name-input').focus();
+
+            });
+
+            document.getElementById('save-equipment-button').addEventListener('click', function() {
+                const newEquipmentName = document.getElementById('equipment-name-input').value;
+
+                // Send the new equipment name to the server via AJAX
+                fetch('/add-equipment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({ 'equipment_name': newEquipmentName })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Clear the input box and hide it
+                    document.getElementById('new-equipment-input').style.display = 'none';
+                    document.getElementById('equipment-name-input').value = '';
+
+                    // Clear only the equipment items, not the title
+                    const equipmentContainer = document.querySelector('.equipment-container');
+                    const equipmentItems = equipmentContainer.querySelectorAll('.equipment-item');
+                    equipmentItems.forEach(item => item.remove());
+
+                    // Add the updated list of equipment (including new one)
+                    data.forEach(equipment => {
+                        const equipmentDiv = document.createElement('div');
+                        equipmentDiv.className = 'equipment-item';
+                        equipmentDiv.innerHTML = `
+                            <span class="equipment-list">${equipment[0]}</span>
+                            <form name="equipment_delete" action="/run-two" method="POST" style="display:inline;">
+                                <input type="hidden" name="equipment_name" value="${equipment[0]}">
+                                <button class="equipment-button" type="submit">x</button>
+                            </form>`;
+                        equipmentContainer.appendChild(equipmentDiv);
+                    });
+                })
+                .catch(error => console.error("Error adding equipment:", error));
+            });
+
+            // Event listener to hide the input box when clicking outside of it
+            document.addEventListener('click', function(event) {
+                const equipmentInputBox = document.getElementById('new-equipment-input');
+                const equipmentAddButton = document.getElementById('equipment_add');
+
+                // Check if the click was outside the equipment input box and the button
+                if (!equipmentInputBox.contains(event.target) && event.target !== equipmentAddButton) {
+                    equipmentInputBox.style.display = 'none';
+                }
+            });
+
+  </script>
+</body>
+</html>

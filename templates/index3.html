@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style3.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+<body>
+
+
+<div class="wrapper">
+<div class="nav-links">
+    {% if level == "Admin" %}
+            <ul>
+                <li id="home"><a href="{{ url_for('home') }}">Home</a></li>
+                <li id="contact" onclick="window.location.href='show-tickets';"><a href="#">Show Tickets</a></li>
+                <li id="addTicket"><a href="{{ url_for('add_ticket') }}">Submit Ticket</a></li>
+                <li id="editLists"><a href="{{ url_for('edit_lists') }}">Edit Lists</a></li>
+                <li id="accounts management"><a href="{{ url_for('accounts_management') }}">Accounts Management</a></li>
+
+            </ul>
+            <hr>
+
+
+
+    {% endif %}
+
+    {% if level == "Customer" %}
+
+        <ul>
+                <li id="home"><a href="{{ url_for('home') }}">Home</a></li>
+                <li id="contact" onclick="window.location.href='show-tickets';"><a href="#">Show Tickets</a></li>
+                <li id="addTicket"><a href="{{ url_for('add_ticket') }}">Submit Ticket</a></li>
+
+            </ul>
+            <hr>
+
+    {% endif %}
+
+
+    {% if level == "Supporter" %}
+
+        <ul>
+                <li id="home"><a href="{{ url_for('home') }}">Home</a></li>
+                <li id="contact" onclick="window.location.href='show-tickets';"><a href="#">Show Tickets</a></li>
+
+
+            </ul>
+            <hr>
+
+    {% endif %}
+
+    </div>
+
+<form action="/logout" method="post">
+    <button type="submit" class="logout">Log out</button>
+</form>
+<img class="messages" src="{{ url_for('static', filename='email.png') }}">
+<img id="pro" class="profile" src="{{ url_for('static', filename='profile.png') }}">
+<a class="Hello_customer">Hello, {{ username }}</a>
+
+
+{% if unread_messages != 0 %}
+    <div class="number_of_new_messages">
+        <a class="amount_messages_unread">{{ unread_messages }}</a>
+
+
+    </div>
+{% endif %}
+
+</div>
+
+
+
+<div id="profileContainer" class="hide">
+    <img id="fresh" class="profile_pic" src="{{ url_for('static', filename='profile.png') }}">
+    <a class="icon">+</a>
+    <br>
+    <a class="profile_text"> user name: {{ username }}</a>
+    <br>
+    <br>
+
+    <a class="profile_text">permission level: {{ level }}</a>
+    <br>
+    <br>
+    <a class="profile_text">created by: {{ created_by }}</a>
+    <br>
+    <br>
+    <a class="profile_text">company name: {{ company }}</a>
+    <a class="closing_popup_profile">x</a>
+
+
+</div>
+
+<input type="hidden" id="current_user" value="{{ username }}">
+
+
+{% if open_messages == 'True' %}
+    <div id="messages_container" class="messages_container">
+        <script>const background = document.querySelector(".wrapper");
+        background.classList.add("blur");</script>
+
+
+
+
+{% else %}
+    <div id="messages_container" class="hide">
+{% endif %}
+
+    <a class="Title">Chats</a>
+    <form action="/fetching-unread" method="POST">
+    <input name="username2" type="hidden" value="{{ username }}">
+    <button type="submit" class="closing_popup_messages">x</button>
+    </form>
+
+
+    <a class="add_message_icon" >+</a>
+    <input class="hide" placeholder="search here" />
+
+
+    <form id="gettingNewForm" class="hide">
+    <div class="dropdown">
+
+            <select name="option" id="option">
+                {% for option in options %}
+                    {% if option not in chat_partners %}
+                    <option value="{{ option }}">{{ option }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+
+    </div>
+
+    <button type="submit" class="dropdown-button">Submit</button>
+    </form>
+
+
+
+
+
+
+
+    <!-- Sidebar for chat partners -->
+
+    <div id="chat_sidebar">
+    {% for partner in chat_partners %}
+        <input type="hidden" id="all_chats_names" value='{{ chat_partners | tojson }}'>
+        <div class="chat_tab {% if partner == recipient %}{% endif %}" onclick="loadChat('{{ partner }}')">
+            {{ partner }}
+            <span class="last_message"></span>
+            <!-- Space for last message -->
+            {% if all_users_with_unread_messages is not none and all_users_with_unread_messages != 0 %}
+
+                    {% if partner in all_users_with_unread_messages %}
+                        <div class="mark_unread_chat"></div>
+
+
+                    {% endif %}
+
+            {% endif %}
+
+        </div>
+    {% endfor %}
+</div>
+
+    <!-- Chatbox (scrollable) -->
+    <div id="chatBox"></div>
+
+    <!-- Message input form (fixed at the bottom) -->
+    <form id="messageForm" action="/send_message" method="POST">
+        <input type="hidden" name="recipient" id="recipient">
+        <textarea name="message" class="send_message_textarea" placeholder="Send a message..."></textarea>
+        <button type="submit" class="invisible">
+            <img class="sending_arrow" src="{{ url_for('static', filename='sending_arrow.png') }}">
+        </button>
+    </form>
+</div>
+</div>
+
+
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+    fetch('/get_last_message')
+        .then(response => response.json())
+        .then(data => {
+            const lastMessages = data.last_messages;
+            const allPartners = JSON.parse(document.getElementById("all_chats_names").value || "[]");
+
+            allPartners.forEach(partner => {
+                // Fetch the last message for each partner from the returned data
+                const message = lastMessages[partner] || "[No messages yet]";
+                updateLastMessageInSidebar(partner, message);
+            });
+        });
+});
+
+
+
+    function toggleSendButton() {
+    const textarea = document.querySelector(".send_message_textarea");
+    const sendButton = document.querySelector(".sending_arrow");
+
+    // Show the button if there is text inside the textarea, otherwise hide it
+    if (textarea.value.trim() !== "") {
+        sendButton.style.display = "block";  // Show the button
+        sendButton.classList.add("sending_arrow2");
+    } else {
+        sendButton.style.display = "none";   // Hide the button
+    }
+}
+
+    // Attach the input event listener to the textarea to call toggleSendButton when the user types
+    document.querySelector(".send_message_textarea").addEventListener("input", toggleSendButton);
+
+
+
+
+
+    let currentChatPartner = null;
+    if (currentChatPartner === null) {const textarea = document.querySelector(".send_message_textarea");
+    textarea.classList.add("hide");
+
+
+
+
+    }
+
+    function loadChat(partner) {
+    currentChatPartner = partner;
+    document.getElementById("recipient").value = partner;
+
+    document.getElementById("all_chats_names").value = all_chats_names;
+    console.log(all_chats_names);
+
+
+
+
+        fetch('/change-message-status', {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(partner),
+            cache: "no-cache",
+            headers: new Headers({
+                "content-type": "application/json"
+        })
+    })
+
+
+
+
+
+
+    if (currentChatPartner !== null) {
+        const textarea = document.querySelector(".send_message_textarea");
+        textarea.classList.remove("hide");
+    }
+
+    fetch(`/get_last_message/${partner}`)
+        .then(response => response.json())
+        .then(data => {
+            updateLastMessageInSidebar(partner, data.last_message);
+
+            fetch(`/get_messages/${partner}`)
+                .then(response => response.json())
+                .then(data => {
+                    let chatBox = document.getElementById("chatBox");
+                    chatBox.innerHTML = "";
+
+                    let lastDate = "";
+
+                    data.forEach(msg => {
+                        let messageDiv = document.createElement("div");
+                        messageDiv.classList.add("message_box");
+                        const currentUser = document.getElementById("current_user").value;
+                        messageDiv.classList.add(msg.from_user === currentUser ? "sent" : "received");
+
+
+                        if (msg.date !== lastDate) {
+                            let dateBanner = document.createElement("div");
+                            dateBanner.classList.add("date_banner");
+                            dateBanner.textContent = msg.date;
+
+                            chatBox.appendChild(dateBanner);
+                            lastDate = msg.date;
+                        }
+
+                        let contentSpan = document.createElement("span");
+                        contentSpan.classList.add("message_content");
+                        contentSpan.textContent = msg.content;
+
+                        let timestampSpan = document.createElement("span");
+                        timestampSpan.classList.add("timestamp-sent");
+                        timestampSpan.textContent = msg.timestamp;
+
+                        messageDiv.appendChild(contentSpan);
+                        messageDiv.appendChild(timestampSpan);
+                        chatBox.appendChild(messageDiv);
+                    });
+
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                });
+
+            // Mark the selected chat as active
+            document.querySelectorAll(".chat_tab").forEach(tab => tab.classList.remove("active_chat"));
+            const activeTab = document.querySelector(`.chat_tab[onclick="loadChat('${partner}')"]`);
+            if (activeTab) {
+                activeTab.classList.add("active_chat");
+            }
+        });
+}
+
+
+
+
+</script>
+
+
+<style>
+    #chat_sidebar {
+        width: 150px;
+        float: left;
+        margin-left: 20px;
+        position: absolute;
+        margin-top: 80px;
+
+
+
+    }
+
+    .chat_tab {
+        cursor: pointer;
+        font-size: 22px;
+        font-family: Arial, Helvetica, sans-serif;
+        margin-bottom: 15px;
+
+
+
+
+    }
+
+    .active_chat {
+        background: #eee;
+        border-radius: 10px;
+        width: 180px;
+        box-shadow: -15px 0 0 0 #eee;
+
+
+
+    }
+
+    #chatBox {
+        margin-left: 220px; /* Space for sidebar */
+        padding: 10px;
+
+    }
+</style>
+
+
+
+<script>
+
+
+
+
+
+
+
+    const profile_pic = document.querySelector("#pro");
+    profile_pic.addEventListener("click", () => {
+        const profile_container = document.querySelector("#profileContainer");
+        profile_container.classList.add("profileContainer");
+        profile_container.classList.remove("hide");
+        const background = document.querySelector(".wrapper");
+        background.classList.add("blur");
+
+
+
+
+
+
+
+    })
+
+    const closed_button = document.querySelector(".closing_popup_profile");
+
+
+
+    closed_button.addEventListener("click", () => {
+        const profile_container = document.querySelector("#profileContainer");
+        profile_container.classList.add("profileContainer");
+        profile_container.classList.add("hide");
+        profile_container.classList.remove("profileContainer");
+        const background = document.querySelector(".wrapper");
+        background.classList.remove("blur");
+
+    })
+
+    const closed_button2 = document.querySelector(".closing_popup_messages");
+    closed_button2.addEventListener("click", () => {
+        const messages_container = document.querySelector("#messages_container");
+        messages_container.classList.add("hide");
+        messages_container.classList.remove("messages_container")
+        const background = document.querySelector(".wrapper");
+        background.classList.remove("blur");
+
+    })
+
+
+
+
+    const messages_button = document.querySelector(".messages");
+    messages_button.addEventListener("click", () => {
+        const messages_container = document.querySelector("#messages_container");
+        messages_container.classList.remove("hide");
+        messages_container.classList.add("messages_container");
+        const background = document.querySelector(".wrapper");
+        background.classList.add("blur");
+
+
+
+    })
+
+
+
+</script>
+
+
+
+<script>
+    window.history.pushState(null, "", window.location.href);
+    window.onpopstate = function () {
+        window.history.pushState(null, "", window.location.href);
+    };
+</script>
+
+
+<script>
+  // Listen for the form submission event
+document.getElementById("messageForm").addEventListener("submit", function(event) {
+    event.preventDefault();  // Prevent the page from refreshing
+
+    var recipient = document.getElementById("recipient").value;
+    var message = document.querySelector("textarea[name='message']").value;
+
+    // Prepare the form data
+    var formData = new FormData();
+    formData.append("recipient", recipient);
+    formData.append("message", message);
+
+    // Send the form data using AJAX (Fetch API)
+    fetch("/send_message", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())  // Expecting a JSON response with the sent message
+    .then(data => {
+        // Add the new message to the chat box without page refresh
+        const chatBox = document.getElementById("chatBox");
+
+        let messageDiv = document.createElement("div");
+        messageDiv.classList.add("message_box");
+        messageDiv.classList.add("sent");  // Assuming it's a sent message from the user
+
+        let contentSpan = document.createElement("span");
+        contentSpan.classList.add("message_content");
+        contentSpan.textContent = data.content;  // Assuming response returns the message content
+
+        let timestampSpan = document.createElement("span");
+        timestampSpan.classList.add("timestamp-sent");
+        timestampSpan.textContent = data.timestamp;  // Assuming response returns the message timestamp
+
+        messageDiv.appendChild(contentSpan);
+        messageDiv.appendChild(timestampSpan);
+
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to bottom
+
+        // Update the last message in the sidebar for the recipient
+        updateLastMessageInSidebar(recipient, data.content);
+
+        // Optionally clear the message input
+        document.querySelector("textarea[name='message']").value = "";
+    })
+    .catch(error => console.error("Error:", error));  // Handle errors
+});
+
+// Function to update the last message under the chat name in the sidebar
+function updateLastMessageInSidebar(partner, message) {
+    const chatTab = document.querySelector(`.chat_tab[onclick="loadChat('${partner}')"]`);
+    let truncatedMessage = message.length > 30 ? message.slice(0, 30) + "..." : message;
+
+    const lastMessageSpan = chatTab.querySelector(".last_message");
+
+    if (lastMessageSpan) {
+        lastMessageSpan.textContent = truncatedMessage;
+    } else {
+        const newMessageSpan = document.createElement("span");
+        newMessageSpan.classList.add("last_message");
+        newMessageSpan.textContent = truncatedMessage;
+        chatTab.appendChild(newMessageSpan);
+    }
+}
+
+
+
+
+
+
+
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const selectedChat = "{{ request.args.get('selected_chat', '') }}";  // Get selected chat from URL
+        if (selectedChat) {
+            loadChat(selectedChat);  // Open the chat automatically
+        }
+    });
+</script>
+
+
+
+<script>
+document.getElementById("gettingNewForm").addEventListener("submit", function(event) {
+    event.preventDefault();  // Prevent form from refreshing the page
+
+    var formData = new FormData(this);
+
+    fetch("/getting_new", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())  // Expecting a JSON response with the selected user
+    .then(data => {
+        if (data.success) {
+            // Update the chat partners list on the sidebar dynamically
+            let chatSidebar = document.getElementById("chat_sidebar");
+            let newChatTab = document.createElement("div");
+            newChatTab.classList.add("chat_tab");
+            newChatTab.textContent = data.selected_user;
+            newChatTab.setAttribute("onclick", `loadChat('${data.selected_user}')`);
+            chatSidebar.appendChild(newChatTab);
+
+            // Open the chat with the newly selected user
+            loadChat(data.selected_user);  // Automatically open the chat with the new partner
+
+            // Optionally, close the dropdown form once a user is selected
+            document.querySelector("#gettingNewForm").classList.add("hide");
+        }
+    })
+    .catch(error => console.error("Error:", error));
+});
+</script>
+
+
+<script>
+
+    const add_message_icon = document.querySelector(".add_message_icon");
+    add_message_icon.addEventListener("click", () => {
+
+    const userSelection = document.querySelector("#gettingNewForm");
+    userSelection.classList.toggle("hide");
+
+    })
+
+</script>
+
+
+
+</body>
+</html>

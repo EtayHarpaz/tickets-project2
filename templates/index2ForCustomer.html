@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head class="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+    <title>Show Tickets</title>
+    <style>
+        /* Ensure no overrides to navbar */
+        .nav-links {
+            flex: 1;
+            text-align: left;
+            margin-left: -30px;
+            background-color: #D3D3D3;
+            height: 50px;
+            width: 102.65%;
+            margin-top: -16px;
+        }
+
+        .nav-links ul li {
+            list-style: none;
+            display: inline-block;
+            position: relative;
+            margin-right: 20px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .nav-links ul li a {
+            color: black;
+            text-decoration: none;
+            font-size: 1.8vh;
+            margin-left: 10px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* Styles for table layout (for tickets) */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        /* Container for table */
+        .container {
+            margin-top: 60px;
+            width: 100%;
+            overflow-x: auto;
+            font-size: 13px;
+        }
+
+        /* Table layout for tickets */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Severity Colors */
+        .severity-critical {
+            background-color: red;
+        }
+
+        .severity-high {
+            background-color: orange;
+        }
+
+        .severity-med {
+            background-color: yellow;
+        }
+
+        .severity-minor {
+            background-color: #D3D3D3;  /* Light grey color code */
+        }
+
+        /* Description field to allow vertical growth */
+        .ticket-description {
+            white-space: normal;  /* Allow text to wrap */
+            word-wrap: break-word;  /* Prevent text overflow */
+            min-height: 30px;  /* Set a minimum height */
+            height: auto;  /* Allow it to expand vertically */
+            overflow: hidden;  /* Hide horizontal overflow */
+            line-height: 1.4;  /* Improve text readability */
+        }
+
+        /* Set fixed width for other columns */
+        th, td {
+            width: 150px;  /* Default column width for all columns */
+        }
+
+        /* Set description column to be more flexible in height, but fixed in width */
+        .ticket-description {
+            width: 200px;  /* Set fixed width for description column */
+        }
+
+        .ticket-link {
+            color: black;
+            text-decoration: none;
+        }
+
+        .ticket-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="body">
+
+    <div class="nav-links">
+
+
+        <ul>
+                <li id="home"><a href="{{ url_for('home') }}">Home</a></li>
+                <li id="contact" onclick="window.location.href='show-tickets';"><a href="#">Show Tickets</a></li>
+                <li id="addTicket"><a href="{{ url_for('add_ticket') }}">Submit Ticket</a></li>
+
+            </ul>
+            <hr>
+
+
+    </div>
+
+    <button class="sort_btn">Sort</button>
+    <button class="filter_btn">Filter by</button>
+    <img id="search_btn" class="search_btn" src="{{ url_for('static', filename='search1.svg') }}">
+
+
+    <form action="/search" method="POST">
+        <div id="div1" class="hide">
+            <input id="search" name="thisone" class="textarea"></input>
+            <button class="search_btn2" type="submit">Search</button>
+
+        </div>
+    </form>
+
+
+{% if selected_filter_category and selected_filter_value %}
+    <div class="active-filter">
+        <span>{{ selected_filter_category }}: {{ selected_filter_value }}</span>
+        <button class="remove-filter-btn">✖</button>
+    </div>
+
+    <script>
+        document.querySelector(".remove-filter-btn").addEventListener("click", function() {
+            window.location.href = "/remove_filter";  // Redirect to remove filter
+        });
+    </script>
+{% endif %}
+
+<!-- Sorting Form -->
+<form action="/sort" id="sorting_select" class="hide" method="POST">
+    <select name="sorting_option" id="sort_options">
+        <option value="id low to high" {% if selected_sorting_option == "id low to high" %}selected{% endif %}>ID Low to High</option>
+        <option value="id high to low" {% if selected_sorting_option == "id high to low" %}selected{% endif %}>ID High to Low</option>
+        <option value="severity low to high" {% if selected_sorting_option == "severity low to high" %}selected{% endif %}>Severity Low to High</option>
+        <option value="severity high to low" {% if selected_sorting_option == "severity high to low" %}selected{% endif %}>Severity High to Low</option>
+
+    </select>
+</form>
+
+<!-- Filtering Form -->
+<form action="/filter" id="filter_select" class="hide" method="POST">
+
+    <select name="filter_category" id="filter_category">
+        <option value="">Select Category</option>
+        <option value="equipment">Equipment</option>
+        <option value="severity">Severity</option>
+
+    </select>
+
+
+    <select name="filter_value" id="filter_value" disabled>
+        <option value="">Select Value</option>
+    </select>
+
+    <button type="submit" disabled>Apply Filter</button>
+</form>
+
+<script>
+
+    const searchIcon = document.querySelector("#search_btn");
+    const div1 = document.querySelector("#div1");
+    const searchInput = document.getElementById("search");
+    const displayText = document.getElementById("displayText");
+
+    // Toggle div1 visibility when clicking search button
+    searchIcon.addEventListener("click", () => {
+        div1.style.display = div1.style.display === "none" ? "block" : "none";
+    });
+
+    // Ensure event listener is added only once for input changes
+    searchInput.addEventListener("input", function () {
+        let inputValue = this.value;
+        fetch('/submit?user_input=' + encodeURIComponent(inputValue))
+            .then(response => response.text())
+            .then(data => {
+                displayText.innerText = data;
+            });
+    });
+
+
+
+
+    document.querySelector(".sort_btn").addEventListener("click", () => {
+        const sortingSelect = document.querySelector("#sorting_select");
+        sortingSelect.classList.toggle("hide");
+        sortingSelect.classList.add("sorting_selection")
+    });
+
+    document.getElementById("sort_options").addEventListener("change", function() {
+        this.form.submit();
+    });
+
+    document.querySelector(".filter_btn").addEventListener("click", () => {
+        const filterSelect = document.querySelector("#filter_select");
+        filterSelect.classList.toggle("hide");
+        filterSelect.classList.add("filter_selection")
+
+
+
+    });
+
+    const categorySelect = document.getElementById("filter_category");
+    const valueSelect = document.getElementById("filter_value");
+    const applyButton = document.querySelector("#filter_select button");
+
+    categorySelect.addEventListener("change", function() {
+        const selectedCategory = this.value;
+        valueSelect.innerHTML = "<option value=''>Select Value</option>";
+        valueSelect.disabled = true;
+        applyButton.disabled = true;
+
+
+
+        if (!selectedCategory) return;
+
+        fetch(`/get_filter_values?category=${selectedCategory}`)
+            .then(response => response.json())
+            .then(data => {
+                data.values.forEach(value => {
+                    const option = document.createElement("option");
+                    option.value = value;
+                    option.textContent = value;
+                    valueSelect.appendChild(option);
+                });
+                valueSelect.disabled = false;
+
+            })
+            .catch(error => console.error("Error fetching filter values:", error));
+    });
+
+    valueSelect.addEventListener("change", function() {
+        applyButton.disabled = !this.value;
+
+    });
+</script>
+
+
+
+
+
+
+
+
+
+    <div class="container">
+        <table class="this">
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Severity</th>
+                    <th>Equipment</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Creation Date</th>
+                    <th>Notes</th>
+                    <th>Files</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket_data in ticket_notes_data %}
+
+                    {% if request.path == '/show-tickets' and ticket_data.ticket[6] != 'closed' and ticket_data.ticket[2] == full_name %}
+                        <!-- Show tickets that are not closed on the '/show-tickets' page -->
+                        <tr id="ticket_{{ ticket_data.ticket[0] }}">
+                            <!-- Ticket ID -->
+                            <td><a href="#" class="ticket-link">{{ ticket_data.ticket_id }}</a></td>
+
+                            <!-- Severity -->
+                            <td class="severity-{{ ticket_data.ticket[1]|lower if ticket_data.ticket[1] != 'Med' else 'med' }}">{{ ticket_data.ticket[1] }}</td>
+
+
+
+                            <!-- Equipment -->
+                            <td>{{ ticket_data.ticket[3] }}</td>
+
+                            <!-- Description -->
+                            <td class="ticket-description">{{ ticket_data.ticket[4] }}</td>
+
+
+
+                            <!-- Status Dropdown -->
+                            <td>
+                              {{ ticket_data.ticket[6] }}
+                            </td>
+
+                            <!-- Creation Date -->
+                            <td>{{ ticket_data.ticket[7] }}</td>
+
+                            <!-- Amount of Valid Notes -->
+                            <td>
+                                <button class="amount_notes" data-ticket-id="{{ ticket_data.ticket_id }}">
+                                    {{ ticket_data.amount_valid_notes }}
+                                </button>
+                            </td>
+
+                            <td>
+                                {% if ticket_data.image %}
+                                    <a href="#" onclick="openPopup('{{ ticket_data.image | escape }}'); return false;">
+                                        <img src="data:image/jpeg;base64,{{ ticket_data.image }}"
+                                             alt="Ticket Image"
+                                             class="thumbnail">
+                                    </a>
+
+
+                                {% endif %}
+                            </td>
+                            <div id="imagePopup" class="popup">
+                                <span class="close" onclick="closePopup()">&times;</span>
+                                <img id="popupImage" class="popup-content">
+                            </div>
+
+                            <style>
+
+                            .thumbnail {
+                                width: 40px;  /* Fixed small size */
+                                height: 40px; /* Keeps all images uniform */
+                                object-fit: cover; /* Prevents distortion */
+                                border-radius: 5px; /* Optional: Rounded corners */
+                                cursor: pointer; /* Makes it clear it's clickable */
+                            }
+
+
+                            .popup {
+                                display: none;
+                                position: fixed;
+                                z-index: 1000;
+                                left: 0;
+                                top: 0;
+                                width: 100%;
+                                height: 100%;
+                                background-color: rgba(0, 0, 0, 0.8);
+                                justify-content: center;
+                                align-items: center;
+                            }
+
+
+                            .popup-content {
+                                max-width: 90%;
+                                max-height: 90%;
+                                border-radius: 8px;
+                                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                            }
+
+
+                            .close {
+                                position: absolute;
+                                top: 10px;
+                                right: 20px;
+                                color: white;
+                                font-size: 30px;
+                                font-weight: bold;
+                                cursor: pointer;
+                            }
+                            </style>
+
+                            <script>
+                            function openPopup(imageData) {
+                                var popup = document.getElementById("imagePopup");
+                                var popupImage = document.getElementById("popupImage");
+
+                                popupImage.src = "data:image/jpeg;base64," + imageData;
+                                popup.style.display = "flex"; // Show the popup
+                            }
+
+                            function closePopup() {
+                                document.getElementById("imagePopup").style.display = "none";
+                            }
+                            </script>
+                        </tr>
+
+
+                    {% elif request.path == '/filter' and ticket_data.ticket[6] != 'closed' and ticket_data.ticket[2] == full_name %}
+                        <!-- Show all tickets (including closed ones) on the '/filter' page -->
+                        <tr id="ticket_{{ ticket_data.ticket[0] }}">
+                            <!-- Ticket ID -->
+                            <td><a href="#" class="ticket-link">{{ ticket_data.ticket_id }}</a></td>
+
+                            <!-- Severity -->
+                            <td class="severity-{{ ticket_data.ticket[1]|lower if ticket_data.ticket[1] != 'Med' else 'med' }}">{{ ticket_data.ticket[1] }}</td>
+
+                            <!-- Customer -->
+
+
+                            <!-- Equipment -->
+                            <td>{{ ticket_data.ticket[3] }}</td>
+
+                            <!-- Description -->
+                            <td class="ticket-description">{{ ticket_data.ticket[4] }}</td>
+
+                            <!-- Allocated To -->
+
+
+                            <!-- Status Dropdown -->
+                            <td>
+                                 {{ ticket_data.ticket[6] }}
+                            </td>
+
+                            <!-- Creation Date -->
+                            <td>{{ ticket_data.ticket[7] }}</td>
+
+                            <!-- Amount of Valid Notes -->
+                            <td>
+                                <button class="amount_notes" data-ticket-id="{{ ticket_data.ticket_id }}">
+                                    {{ ticket_data.amount_valid_notes }}
+                                </button>
+                            </td>
+
+                            <td>
+                                {% if ticket_data.image %}
+                                    <a href="#" onclick="openPopup('{{ ticket_data.image | escape }}'); return false;">
+                                        <img src="data:image/jpeg;base64,{{ ticket_data.image }}"
+                                             alt="Ticket Image"
+                                             class="thumbnail">
+                                    </a>
+
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                    {% elif request.path == '/sort' and ticket_data.ticket[6] != 'closed' and ticket_data.ticket[2] == full_name %}
+                        <!-- Show tickets that are not closed on the '/show-tickets' page -->
+                        <tr id="ticket_{{ ticket_data.ticket[0] }}">
+                            <!-- Ticket ID -->
+                            <td><a href="#" class="ticket-link">{{ ticket_data.ticket_id }}</a></td>
+
+                            <!-- Severity -->
+                            <td class="severity-{{ ticket_data.ticket[1]|lower if ticket_data.ticket[1] != 'Med' else 'med' }}">{{ ticket_data.ticket[1] }}</td>
+
+                            <!-- Customer -->
+
+
+                            <!-- Equipment -->
+                            <td>{{ ticket_data.ticket[3] }}</td>
+
+                            <!-- Description -->
+                            <td class="ticket-description">{{ ticket_data.ticket[4] }}</td>
+
+
+
+                            <!-- Status Dropdown -->
+                            <td>
+                                {{ ticket_data.ticket[6] }}
+                            </td>
+
+                            <!-- Creation Date -->
+                            <td>{{ ticket_data.ticket[7] }}</td>
+
+                            <!-- Amount of Valid Notes -->
+                            <td>
+                                <button class="amount_notes" data-ticket-id="{{ ticket_data.ticket_id }}">
+                                    {{ ticket_data.amount_valid_notes }}
+                                </button>
+                            </td>
+
+                            <td>
+                                {% if ticket_data.image %}
+                                    <a href="#" onclick="openPopup('{{ ticket_data.image | escape }}'); return false;">
+                                        <img src="data:image/jpeg;base64,{{ ticket_data.image }}"
+                                             alt="Ticket Image"
+                                             class="thumbnail">
+                                    </a>
+
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+
+
+
+
+                    {% if request.path == '/search' and ticket_data.ticket[6] != 'closed' and ticket_data.ticket[2] == full_name  %}
+                 <!-- Show all tickets (including closed ones) on the '/filter' page -->
+                        <tr id="ticket_{{ ticket_data.ticket[0] }}">
+                            <!-- Ticket ID -->
+                            <td><a href="#" class="ticket-link">{{ ticket_data.ticket_id }}</a></td>
+
+                            <!-- Severity -->
+                            <td class="severity-{{ ticket_data.ticket[1]|lower if ticket_data.ticket[1] != 'Med' else 'med' }}">{{ ticket_data.ticket[1] }}</td>
+
+                            <!-- Customer -->
+
+
+                            <!-- Equipment -->
+                            <td>{{ ticket_data.ticket[3] }}</td>
+
+                            <!-- Description -->
+                            <td class="ticket-description">{{ ticket_data.ticket[4] }}</td>
+
+                            <!-- Allocated To -->
+
+
+                            <!-- Status Dropdown -->
+                            <td>
+                                {{ ticket_data.ticket[6] }}
+                            </td>
+
+                            <!-- Creation Date -->
+                            <td>{{ ticket_data.ticket[7] }}</td>
+
+                            <!-- Amount of Valid Notes -->
+                            <td>
+                                <button class="amount_notes" data-ticket-id="{{ ticket_data.ticket_id }}">
+                                    {{ ticket_data.amount_valid_notes }}
+                                </button>
+                            </td>
+
+                            <td>
+                                {% if ticket_data.image %}
+                                    <a href="#" onclick="openPopup('{{ ticket_data.image | escape }}'); return false;">
+                                        <img src="data:image/jpeg;base64,{{ ticket_data.image }}"
+                                             alt="Ticket Image"
+                                             class="thumbnail">
+                                    </a>
+
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                    {% endif %}
+
+                {% endfor %}
+
+
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Blurred background overlay -->
+    <div id="blurredBackground" onclick="closeTicket()"></div>
+
+    <button class="save_button">Save</button>
+
+    <div id="closing_popup" class="hide">
+        <h1 class="header">Solution to the ticket</h1>
+        <form action="/solution" method="POST">
+            <textarea name="user_input" class="solution_input" placeholder="Enter your solution here"></textarea>
+            <input type="hidden" name="ticket_id" value="1"> <!-- Replace 123 with the actual ticket ID -->
+            <button type="submit" class="submit_solution">Submit</button>
+        </form>
+
+
+
+
+
+
+    </div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Select all the buttons in the "Amount Notes" column
+    const buttons = document.querySelectorAll('.amount_notes');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const row = this.closest('tr');
+            const ticketId = row.querySelector('td:first-child').textContent.trim();
+
+            const rowData = {};
+            const columns = row.querySelectorAll('td');
+
+            columns.forEach((column, index) => {
+                if (index !== 0) {
+                    const cellData = column.textContent.trim();
+                    if (isNaN(cellData) && cellData !== 'None' && cellData !== '') {
+                        rowData[`column_${index}`] = cellData;
+                    }
+                }
+            });
+
+            fetch('/get-notes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ticket_id: ticketId, ticket_data: rowData }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Create dark background overlay
+                let overlay = document.createElement("div");
+                overlay.style.position = "fixed";
+                overlay.style.top = "0";
+                overlay.style.left = "0";
+                overlay.style.width = "100%";
+                overlay.style.height = "100%";
+                overlay.style.background = "rgba(0, 0, 0, 0.5)";
+                overlay.style.zIndex = "999";
+
+                // Create popup container
+                let popup = document.createElement("div");
+                popup.style.position = "fixed";
+                popup.style.top = "50%";
+                popup.style.left = "50%";
+                popup.style.transform = "translate(-50%, -50%)";
+                popup.style.background = "white";
+                popup.style.padding = "20px";
+                popup.style.boxShadow = "0px 0px 20px rgba(0, 0, 0, 0.5)";
+                popup.style.borderRadius = "12px";
+                popup.style.zIndex = "1000";
+                popup.style.width = "30%";
+                popup.style.maxHeight = "60%";
+                popup.style.overflowY = "auto";
+
+                // Create a close button
+                let closeButton = document.createElement("button");
+                closeButton.textContent = "x";
+                closeButton.style.position = "absolute";
+                closeButton.style.top = "10px";
+                closeButton.style.right = "10px";
+                closeButton.style.fontSize = "18px";
+                closeButton.style.border = "none";
+                closeButton.style.background = "transparent";
+                closeButton.style.cursor = "pointer";
+
+                closeButton.addEventListener("click", function() {
+                    document.body.removeChild(overlay);
+                    document.body.removeChild(popup);
+                });
+
+                // Create notes display section
+                let notesContainer = document.createElement("div");
+                notesContainer.style.marginBottom = "20px";
+
+                if (data.notes.length > 0) {
+                    data.notes.forEach((note, index) => {
+                        let noteElement = document.createElement("p");
+                        noteElement.textContent = `${index + 1}. ${note}`;
+                        noteElement.style.margin = "5px 0";
+                        notesContainer.appendChild(noteElement);
+                    });
+                } else {
+                    notesContainer.textContent = "No notes available.";
+                }
+
+                // Create "New Note" button
+                let noteButton = document.createElement("button");
+                noteButton.textContent = "New Note";
+                noteButton.style.display = "block";
+                noteButton.style.marginTop = "10px";
+                noteButton.style.padding = "8px 12px";
+                noteButton.style.background = "#007bff";
+                noteButton.style.color = "white";
+                noteButton.style.border = "none";
+                noteButton.style.borderRadius = "5px";
+                noteButton.style.cursor = "pointer";
+
+                let inputBoxCreated = false;
+                let inputContainer = null;
+                let inputBox = null;
+                let submitButton = null;
+
+                noteButton.addEventListener("click", function() {
+                    if (inputBoxCreated) {
+                        inputContainer.remove();
+                        noteButton.textContent = "New Note";
+                        inputBoxCreated = false;
+                    } else {
+                        inputContainer = document.createElement("div");
+                        inputContainer.style.display = "flex";
+                        inputContainer.style.alignItems = "center";
+                        inputContainer.style.gap = "10px";
+                        inputContainer.style.marginTop = "10px";
+
+                        inputBox = document.createElement("textarea");
+                        inputBox.placeholder = "Enter note...";
+                        inputBox.style.width = "80%";
+                        inputBox.style.height = "100px";
+                        inputBox.style.padding = "8px";
+                        inputBox.style.fontSize = "14px";
+                        inputBox.style.verticalAlign = "top";
+                        inputBox.style.overflowY = "auto";
+                        inputBox.style.resize = "none";
+                        inputBox.style.border = "1px solid #ccc";
+                        inputBox.style.borderRadius = "5px";
+                        inputBox.style.fontFamily = "Arial, sans-serif";
+
+                        submitButton = document.createElement("button");
+                        submitButton.textContent = "Submit";
+                        submitButton.style.padding = "8px 12px";
+                        submitButton.style.border = "none";
+                        submitButton.style.borderRadius = "5px";
+                        submitButton.style.cursor = "pointer";
+                        submitButton.style.marginTop = "80px";
+
+
+                        submitButton.addEventListener("click", function() {
+                            const noteValue = inputBox.value;
+                            if (noteValue.trim() !== "") {
+                                fetch('/create-note', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ ticket_id: ticketId, notes: [noteValue] })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    window.location.reload();
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    window.location.reload();
+                                });
+                            }
+                        });
+
+                        inputContainer.appendChild(inputBox);
+                        inputContainer.appendChild(submitButton);
+                        notesContainer.appendChild(inputContainer);
+                        inputBox.focus();
+
+                        noteButton.textContent = "Close Note";
+                        inputBoxCreated = true;
+                    }
+                });
+
+                popup.appendChild(closeButton);
+                popup.appendChild(notesContainer);
+                popup.appendChild(noteButton);
+
+                document.body.appendChild(overlay);
+                document.body.appendChild(popup);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+});
+</script>
+
+
+<script>
+     if (window.location.pathname === '/filter') {
+
+        const table = document.querySelector(".this");
+
+        if (table) {
+            table.classList.add("table-placement");
+        }
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+    // Add event listener for the Save button
+    document.querySelector('.save_button').addEventListener('click', function() {
+        // Iterate through all the rows in the table
+        const rows = document.querySelectorAll('tr');
+
+        rows.forEach(row => {
+            const statusSelect = row.querySelector('select[id^="status-select"]');
+            if (statusSelect) {
+                const selectedStatus = statusSelect.value;
+                const ticketId = row.querySelector('.ticket-link').textContent.trim();
+
+                if (selectedStatus === "closed") {
+                    const closing_popup = document.querySelector("#closing_popup");
+                    closing_popup.classList.remove("hide");
+                    closing_popup.classList.add("closing_popup");
+
+
+                    const container = document.querySelector(".container");
+                    const head = document.querySelector(".head");
+                    const filter = document.querySelector(".filter_btn");
+                    const sort = document.querySelector(".sort_btn");
+                    const nav = document.querySelector(".nav-links");
+                    head.classList.add("blur");
+                    container.classList.add("blur");
+                    filter.classList.add("blur");
+                    sort.classList.add("blur");
+                    nav.classList.add("blur");
+
+                    const ticketIdInput = closing_popup.querySelector('input[name="ticket_id"]');
+                    ticketIdInput.value = ticketId; // Set the correct ticket_id in the hidden input field
+
+                    const submit_solution = document.querySelector(".submit_solution");
+                    submit_solution.addEventListener("click", () => {
+                        const user_solution = document.querySelector(".solution_input").value;
+                    })
+                }
+
+                // Send a POST request to update the status
+                fetch('/changing-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: selectedStatus, ticket_id: ticketId })
+                })
+                .then(response => response.json())
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+    });
+});
+
+
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    const saveButton = document.querySelector('.save_button');
+    saveButton.style.display = "none";  // Hide button initially
+
+    const statusSelects = document.querySelectorAll('select[id^="status-select"]');
+
+    // Store initial values
+    const initialStatus = new Map();
+    statusSelects.forEach(select => {
+        const ticketId = select.closest('tr').querySelector('.ticket-link').textContent.trim();
+        initialStatus.set(ticketId, select.value);
+
+        select.addEventListener("change", function() {
+            let changesMade = false;
+
+            // Check if any dropdown has changed
+            statusSelects.forEach(s => {
+                const tId = s.closest('tr').querySelector('.ticket-link').textContent.trim();
+                if (s.value !== initialStatus.get(tId)) {
+                    changesMade = true;
+                }
+            });
+
+            // Show or hide the save button based on changes
+            saveButton.style.display = changesMade ? "block" : "none";
+        });
+    });
+
+    // Add event listener to Save button
+    saveButton.addEventListener('click', function() {
+        const updates = [];
+
+        statusSelects.forEach(select => {
+            const ticketId = select.closest('tr').querySelector('.ticket-link').textContent.trim();
+            const newStatus = select.value;
+
+            if (newStatus !== initialStatus.get(ticketId)) {
+                updates.push({ ticket_id: ticketId, status: newStatus });
+            }
+        });
+
+        if (updates.length > 0) {
+            fetch('/changing-status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ updates })
+            })
+            .then(response => response.json())
+            .then(data => {
+
+                // Reset initial values after saving
+                updates.forEach(update => initialStatus.set(update.ticket_id, update.status));
+                saveButton.style.display = "none"; // Hide the button after saving
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    });
+});
+
+
+
+
+
+
+
+
+</script>
+
+
+{% if request.path == '/filter' %}
+    <script>
+        const table = document.querySelector(".this");
+        table.classList.add("forFilter")
+
+
+
+
+    </script>
+
+
+{% endif %}
+
+
+{% if t_count_customer >= 1 and request.path == '/show-tickets' %}
+    <form action="/show-tickets" method="POST">
+
+    {% for one in page_amount_customer %}
+
+        <button id="page_button" type="submit" name="page_button" value="{{ one }}">{{ one }}</button>
+
+
+    {% endfor %}
+
+    </form>
+
+{% endif %}
+
+</body>
+</html>
+
+

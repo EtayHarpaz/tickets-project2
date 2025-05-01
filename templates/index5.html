@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head class="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style5.css') }}">
+    <title>Show Tickets</title>
+    <style>
+        /* Ensure no overrides to navbar */
+        .nav-links {
+            flex: 1;
+            text-align: left;
+            margin-left: -30px;
+            background-color: #ddd;
+            height: 50px;
+            width: 102.65%;
+            margin-top: -16px;
+        }
+
+        .nav-links ul li {
+            list-style: none;
+            display: inline-block;
+            position: relative;
+            margin-right: 20px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .nav-links ul li a {
+            color: black;
+            text-decoration: none;
+            font-size: 1.8vh;
+            margin-left: 10px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+
+    </style>
+</head>
+<body class="body">
+
+    <div class="nav-links">
+        {% if level == "Admin" %}
+            <ul>
+                <li id="home"><a href="{{ url_for('home') }}">Home</a></li>
+                <li id="contact" onclick="window.location.href='show-tickets';"><a href="#">Show Tickets</a></li>
+                <li id="addTicket"><a href="{{ url_for('add_ticket') }}">Submit Ticket</a></li>
+                <li id="editLists"><a href="{{ url_for('edit_lists') }}">Edit Lists</a></li>
+                <li id="accountsManagement"><a href="{{ url_for('accounts_management') }}">Accounts Management</a></li>
+
+            </ul>
+            <hr>
+        {% endif %}
+
+    </div>
+    <br>
+    <a class="add_account">+</a>
+    <br><br>
+        {% for username, company_name, level in accounts %}
+    <br>
+    <a class="try">{{ username }}</a>
+    <a>({{ company_name }}),</a>
+    <a>({{ level }}) </a>
+    <br>
+    {% endfor %}
+
+
+
+    <form action="/add_account" class="hide" name="add_account" method="POST" id="add_account_form">
+        <a class="username_text">username: </a><input name="username" class="username_input">
+        <a class="company_text">company name: </a><input name="company" class="company_input">
+        <a>password: </a><input name="password" class="password">
+        <a>mail address: </a><input name="mail" class="mail">
+        <a>permission level: </a><select name="level" id="user_level" class="user_level">
+                        <option value="Admin">Admin</option>
+                        <option value="Supporter">Supporter</option>
+                        <option value="Customer">Customer</option>
+                        <option value="Only view customer">Only view customer</option>
+        </select>
+
+
+        <button type="submit" class="create_account" >Create</button>
+
+    </form>
+
+
+
+
+<script>
+
+    const create_button = document.querySelector(".add_account");
+    create_button.addEventListener("click", () => {
+        const form = document.querySelector("#add_account_form");
+        form.classList.toggle("hide");
+        form.classList.add("add_account_form");
+
+
+
+
+    })
+
+
+
+
+
+</script>
+
+
+
+</body>
+

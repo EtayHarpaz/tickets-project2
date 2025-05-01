@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <img class="logo" src="{{ url_for('static', filename='new.png') }}">
+
+</head>
+<body>
+    
+    {% if not password_correct and username_input != None %}
+        <script>
+            const username = document.querySelector(".username");
+            username.classList.remove("username");
+            username.classList.add("wrong_details");
+
+
+
+
+        </script>
+        <p class="wow2" style="color: red;">Details are incorrect.</p>
+    {% endif %}
+
+
+        
+
+    <img class="show-pass" src="{{ url_for('static', filename='eye.png') }}">
+
+
+    <img class="hide-pass" src="{{ url_for('static', filename='hide.png') }}">
+
+
+    <a class="login">Login to Your Account</a>
+    <form id="form" method="POST">
+
+            <input class="username" type="text" name="user_input" placeholder="Username">
+            <input class="password" type="password" name="password_input" placeholder="Password">
+            <button class="button" type="submit">Sign in</button>
+
+        </form>
+    
+    
+
+
+
+
+
+
+
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+<script>
+    const showPass = document.querySelector(".show-pass");
+    const hidePass = document.querySelector(".hide-pass");
+    const passwordInput = document.querySelector(".password");
+
+    const passwordWrong = document.querySelector(".wow");
+    const loginButton = document.querySelector(".button");
+
+
+
+    showPass.addEventListener("click",clicking);
+    hidePass.addEventListener("click", clickingonhide);
+
+    function clicking() {
+        showPass.classList.add("show-none");
+        hidePass.classList.remove("hide-pass");
+        hidePass.classList.add("show-pass");
+        passwordInput.setAttribute("type", "text");
+
+    }
+
+
+    function clickingonhide() {
+        showPass.classList.remove("show-none");
+        hidePass.classList.add("hide-pass");
+        hidePass.classList.remove("show-pass");
+        passwordInput.setAttribute("type", "password");
+    }
+
+
+
+
+</script>
+
+
+<script>
+        // Block the back button
+        history.pushState(null, "", location.href);
+        window.onpopstate = function () {
+            history.pushState(null, "", location.href);
+        };
+    </script>
+
+</body>
+</html>
